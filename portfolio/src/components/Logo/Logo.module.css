@@ -1,0 +1,62 @@
+.Logo {
+    display: flex;
+    font-family: 'Zilla Slab', serif;
+    height: 100%;
+    font-size: 2rem;
+    display: flex;
+    justify-content: center;
+}
+
+.Logo span {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    background: #fff;
+    color: black;
+    text-transform: uppercase;
+    font-family: inherit;
+    overflow: hidden; /* Ensures the content is not revealed until the animation */
+    --border-right: .15em solid orange; /* The typwriter cursor */
+    margin: 0 auto; /* Gives that scrolling effect as the typing happens */
+    letter-spacing: .15em; /* Adjust as needed */
+    --animation: typing 3.5s steps(3, end);
+    padding-left: 5px; 
+    margin: 5px 0; 
+  }
+
+  .Logo span p {
+      background: #000;
+      color: #fff;
+      margin: 0;
+      text-align: center;
+      padding-left: 2px;
+      z-index: 1;
+  }
+
+  /* The typing effect */
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+  }
+  
+  /* The typewriter cursor effect */
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: orange }
+}
+
+@media screen and (min-width: 600px){
+  .Logo {
+    font-size: 3rem;
+  }
+  
+  .Logo span p {
+    background: #fff;
+    color:#000;
+  }
+
+  .Logo span {
+    background: #000;
+    color:#fff;
+  }
+}

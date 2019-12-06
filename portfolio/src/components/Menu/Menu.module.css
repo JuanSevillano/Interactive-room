@@ -1,0 +1,56 @@
+@import url('https://fonts.googleapis.com/css?family=Zilla+Slab&display=swap');
+
+.Header {
+    box-sizing: border-box;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    padding: 10px 20px; 
+    display: flex;
+    background: black;
+    flex-direction: row;
+    align-items: flex-end;
+    font-family: 'Zilla Slab', serif;
+    transition: all ease-in-out 300ms;
+    z-index: 98;
+    box-shadow: 0px 0px 20px -1px rgba(0,0,0,0.3);
+}
+.Header nav {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-around;
+}
+.Header ul {
+     margin: 0;
+     display: flex;
+     justify-content: space-around;
+     font-size: 20px;
+     font-weight: 500;
+}
+
+.Header ul li {
+    list-style: none;
+    margin-left: 18px;
+}
+.Header ul li a {
+     color: white;
+     text-decoration: none;
+}
+
+.Header ul li a:hover, 
+.Header ul li a:active {
+    color: #bababa;
+}
+
+@media screen and (min-width: 600px){
+    .Header {
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .Header ul li a {
+        color: black;
+    }
+}

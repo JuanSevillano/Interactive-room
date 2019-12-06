@@ -1,0 +1,27 @@
+{
+    "futuro-generativo": {
+        "id": "futuro-generativo",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar eros a libero mattis finibus. Etiam gravida dui in orci pulvinar sollicitudin. Mauris scelerisque turpis interdum massa dapibus porta. Sed pulvinar viverra eros in viverra. Interdum et malesuada fames ac ante ipsum primis in faucibus. Integer pharetra eros eu fringilla vestibulum. Donec commodo vulputate odio id porta. Ut sed volutpat arcu. Mauris egestas nunc vel leo imperdiet, eget vehicula ipsum dictum. Vivamus interdum justo sem, in fermentum quam tincidunt sit amet.",
+        "tags": ["generative","museum", "interactive", "installation", "future", "art", "contemporary"],
+        "image": "futuro-generativo.png"
+    }
+    ,
+    "trending": {
+        "id": "trending",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar eros a libero mattis finibus. Etiam gravida dui in orci pulvinar sollicitudin. Mauris scelerisque turpis interdum massa dapibus porta. Sed pulvinar viverra eros in viverra. Interdum et malesuada fames ac ante ipsum primis in faucibus. Integer pharetra eros eu fringilla vestibulum. Donec commodo vulputate odio id porta. Ut sed volutpat arcu. Mauris egestas nunc vel leo imperdiet, eget vehicula ipsum dictum. Vivamus interdum justo sem, in fermentum quam tincidunt sit amet.",
+        "tags": ["generative","museum", "interactive", "installation", "future", "art", "contemporary"],
+        "image": "trending.png"
+    },
+    "sevi": {
+        "id": "sevi",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar eros a libero mattis finibus. Etiam gravida dui in orci pulvinar sollicitudin. Mauris scelerisque turpis interdum massa dapibus porta. Sed pulvinar viverra eros in viverra. Interdum et malesuada fames ac ante ipsum primis in faucibus. Integer pharetra eros eu fringilla vestibulum. Donec commodo vulputate odio id porta. Ut sed volutpat arcu. Mauris egestas nunc vel leo imperdiet, eget vehicula ipsum dictum. Vivamus interdum justo sem, in fermentum quam tincidunt sit amet.",
+        "tags": ["generative","museum", "interactive", "installation", "future", "art", "contemporary"],
+        "image": "sevi.png"
+    },
+    "ultimo": {
+        "id": "ultimo",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi pulvinar eros a libero mattis finibus. Etiam gravida dui in orci pulvinar sollicitudin. Mauris scelerisque turpis interdum massa dapibus porta. Sed pulvinar viverra eros in viverra. Interdum et malesuada fames ac ante ipsum primis in faucibus. Integer pharetra eros eu fringilla vestibulum. Donec commodo vulputate odio id porta. Ut sed volutpat arcu. Mauris egestas nunc vel leo imperdiet, eget vehicula ipsum dictum. Vivamus interdum justo sem, in fermentum quam tincidunt sit amet.",
+        "tags": ["generative","museum", "interactive", "installation", "future", "art", "contemporary"],
+        "image": "ultimo.png"
+    }
+}
