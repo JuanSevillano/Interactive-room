@@ -1,0 +1,70 @@
+.Switcher {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.Switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 20px;
+  }
+  
+  .Switch .Input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .SliderRound {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .SliderRound:before {
+    position: absolute;
+    content: "";
+    height: 13px;
+    width: 13px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .Input:checked + .SliderRound {
+    background-color: #2196F3;
+  }
+  
+  .Input:focus + .SliderRound {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  .Input:checked + .SliderRound:before {
+    -webkit-transform: translateX(28px);
+    -ms-transform: translateX(28px);
+    transform: translateX(28px);
+  }
+  
+  /* Rounded Sliders */
+  .SliderRound {
+    border-radius: 34px;
+  }
+  
+  .SliderRound:before {
+    border-radius: 50%;
+  }
+.Day, 
+.Night {
+    max-height: 100%;
+}

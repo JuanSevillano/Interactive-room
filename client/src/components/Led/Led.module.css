@@ -1,0 +1,13 @@
+.Section {
+    box-sizing: content-box;
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    justify-content: space-around;
+    border-bottom: 1px solid lightblue;
+    min-height: 50px;
+}
+
+.Section:last-child {
+    border: none;
+}

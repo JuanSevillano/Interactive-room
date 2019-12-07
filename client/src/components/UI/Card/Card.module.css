@@ -1,0 +1,15 @@
+.Card {
+    width: 100%;
+    display: flex;
+    align-content: center;
+    padding: 20px;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+    margin: 15px 0px;
+}
+
+.Card > * {
+    display: flex;
+    width: 100%;    
+}

@@ -1,0 +1,27 @@
+.Color{
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+
+.Swatch {
+    padding: 5px;
+    border-radius: 50%;
+    background: lightgray;
+    box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+    display: inline-block;
+    cursor: pointer;
+}
+
+.Popover {
+    position: absolute;
+    z-index: 2;
+}
+  
+.Cover{
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+  }

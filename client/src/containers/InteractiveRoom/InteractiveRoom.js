@@ -1,14 +1,14 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import Home from '../../containers/Home/Home';
-import Projects from '../../containers/Projects/Projects';
+import RoomDevices from './RoomDevices/RoomDevices';
+import Projects from '../Projects/Projects';
 import Menu from '../../components/Menu/Menu';
 import FullProject from '../../components/FullProject/FullProject';
 
-import classes from './Portfolio.module.css';
+import classes from './InteractiveRoom.module.css';
 
-class Portfolio extends Component {
+class InteractiveRoom extends Component {
 
     constructor(props){
         super(props);
@@ -19,10 +19,10 @@ class Portfolio extends Component {
 
     render(){
         return (
-            <div className={classes.Portfolio}> 
+            <div className={classes.InteractiveRoom}> 
                     <Menu />
                     <Switch>
-                        <Route path="/" exact component={Home} />
+                        <Route path="/" exact component={RoomDevices} />
                         <Route path="/projects" exact component={Projects} />
                         <Route path="/projects/:id" exact component={FullProject} />
                     </Switch>
@@ -31,4 +31,4 @@ class Portfolio extends Component {
     }
 }
 
-export default Portfolio;
+export default InteractiveRoom;

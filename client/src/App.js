@@ -2,13 +2,13 @@ import React from 'react';
 import './App.css';
 import { BrowserRouter } from 'react-router-dom';
 
-import Portfolio from './hoc/Portfolio/Portfolio';
+import InteractiveRoom from './containers/InteractiveRoom/InteractiveRoom';
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <Portfolio />
+        <InteractiveRoom />
       </BrowserRouter>
     </div>
   );
