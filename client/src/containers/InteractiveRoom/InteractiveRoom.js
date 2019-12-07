@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import RoomDevices from './RoomDevices/RoomDevices';
-import Projects from '../Projects/Projects';
+import Projects from './Projects/Projects';
 import Menu from '../../components/Menu/Menu';
 import FullProject from '../../components/FullProject/FullProject';
 

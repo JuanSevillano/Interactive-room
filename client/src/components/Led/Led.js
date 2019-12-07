@@ -6,7 +6,7 @@ import Switcher from '../UI/Switcher/Switcher';
 
 import classes from './Led.module.css';
 
-class About extends Component {
+class LedController extends Component {
 
     constructor(props){
         super(props);
@@ -58,4 +58,4 @@ class About extends Component {
     }
 };
 
-export default About;
+export default LedController;
