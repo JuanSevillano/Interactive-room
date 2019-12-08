@@ -1,12 +1,16 @@
 const bodyParser = require('body-parser');
+const logger = require('morgan')
 const express = require('express');
 
 const app = express();
+//Routes
 const roomRouter = require('./routes/room');
-
+//express steroids  
 app.use(bodyParser.urlencoded({extended: false}));
-app.use('/room', roomRouter);
+app.use(logger('dev')); 
 
+// Setting routers 
+app.use('/room', roomRouter);
 app.use((req, res, next) => {
     res.status(404).send('<h1>Page not found, 404 Error! </h1>')
 });

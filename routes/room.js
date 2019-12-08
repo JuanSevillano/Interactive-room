@@ -7,16 +7,14 @@ const router = express.Router();
 router.get('/', (req, res, next) => {
     console.log('algo')
     /** ask to controller for the devices status */
-    const devices = [{},{},{}];
-    res.send(JSON.stringify(devices));
+    const devices = [{x: 1},{y: 2},{z: 3}];
+    res.status(200).send(devices);
 });
 
 router.post('/', (req, res, next) => {
-    console.log('[ roomRouter, 13 ] -', req.body); 
-    const colour = req.body.color;
-    console.log(colour)
-    //roomController('setColor', colour);
-    res.status(200).send('ok');
+    const hex = Object.keys(req.body)[0]
+    roomController('setColor', hex);
+    res.status(200).send(hex);
 });
 
 router.get('/off', (req, res, next) => {
