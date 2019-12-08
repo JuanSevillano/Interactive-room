@@ -10,7 +10,7 @@ import classes from './InteractiveRoom.module.css';
 
 class InteractiveRoom extends Component {
     
-    /** Main app Component */
+    /** Main app Component  */
 
     constructor(props){
         super(props);

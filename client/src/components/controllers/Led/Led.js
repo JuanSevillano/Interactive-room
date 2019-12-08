@@ -43,21 +43,23 @@ class LedController extends Component {
     };
     
     handleColor = color => {
-        console.log(color.rgb)
-       // this.sendColor( color.hex )
+        
+        this.sendColor( color )
         this.setState({ color: color.hex })
     }
 
     sendColor = async color => {
-        console.log('..seding colour to the server')
+        console.log('..seding colour to the server');
+        const rgb = { "color": color.rgb }
+        console.log(rgb)
         const opt = {
             url: '/room',
             method: 'post',
-            data: color 
+            data: rgb
         }
         const data = await axios(opt);
-        //const res = await data.response; 
-        console.log(data)
+        const res = await data.response; 
+        console.log(data);
         
     }
 

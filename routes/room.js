@@ -6,16 +6,17 @@ const router = express.Router();
 
 router.get('/', (req, res, next) => {
     console.log('algo')
-    res.send({ hey: 'jodan que se jodan, hey hey!'});
+    /** ask to controller for the devices status */
+    const devices = [{},{},{}];
+    res.send(JSON.stringify(devices));
 });
 
 router.post('/', (req, res, next) => {
-    console.log('[ roomRouter, 13 ] -', req.body);
-    console.log('algo')
-    const status = req.body.swtich ? 'on' : 'off'; 
+    console.log('[ roomRouter, 13 ] -', req.body); 
     const colour = req.body.color;
-    roomController('setColor', colour);
-    res.status(303).redirect('/room').send();
+    console.log(colour)
+    //roomController('setColor', colour);
+    res.status(200).send('ok');
 });
 
 router.get('/off', (req, res, next) => {
