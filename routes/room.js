@@ -5,15 +5,17 @@ const roomController = require('../controllers/room-controller');
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-    res.sendFile(path.join(__dirname, '../', 'views', 'room.html'))
+    console.log('algo')
+    res.send({ hey: 'jodan que se jodan, hey hey!'});
 });
 
 router.post('/', (req, res, next) => {
-    console.log('[ roomRouter, 13 ] -', req.body)
+    console.log('[ roomRouter, 13 ] -', req.body);
+    console.log('algo')
     const status = req.body.swtich ? 'on' : 'off'; 
     const colour = req.body.color;
     roomController('setColor', colour);
-    res.status(303).redirect('/room');
+    res.status(303).redirect('/room').send();
 });
 
 router.get('/off', (req, res, next) => {

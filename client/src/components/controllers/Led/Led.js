@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
-import ColorPicker from '../../tools/ColorPicker/ColorPicker';
+import axios from '../../../axios-connect';
 
-import Card from '../../UI/Card/Card';
+import ColorPicker from '../../tools/ColorPicker/ColorPicker';
 import Switcher from '../../tools/Switcher/Switcher';
 
+import Card from '../../UI/Card/Card';
 import classes from './Led.module.css';
+
 
 class LedController extends Component {
 
@@ -17,6 +19,21 @@ class LedController extends Component {
         }
     }
 
+    componentDidMount(){
+        /* TODO: call the current led state */
+        this.getData();
+    }
+
+    getData = async () => {
+        const opt = {
+            url: '/room',
+            method: 'get'
+        }
+        const data = await axios(opt);
+        const res = await data.response;
+        console.log(res) 
+    }
+
     handleClick = () => {
         this.setState({ displayColorPicker: !this.state.displayColorPicker })
     };
@@ -26,7 +43,22 @@ class LedController extends Component {
     };
     
     handleColor = color => {
+        console.log(color.rgb)
+       // this.sendColor( color.hex )
         this.setState({ color: color.hex })
+    }
+
+    sendColor = async color => {
+        console.log('..seding colour to the server')
+        const opt = {
+            url: '/room',
+            method: 'post',
+            data: color 
+        }
+        const data = await axios(opt);
+        //const res = await data.response; 
+        console.log(data)
+        
     }
 
     render(){

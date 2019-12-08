@@ -3,9 +3,9 @@ import { Route, Switch } from 'react-router-dom';
 
 import RoomDevices from '../../components/views/RoomDevices/RoomDevices';
 import Projects from '../../components/views/Projects/Projects';
-import Menu from '../../components/UI/Menu/Menu';
 import FullProject from '../../components/views/FullProject/FullProject';
 
+import Menu from '../../components/UI/Menu/Menu';
 import classes from './InteractiveRoom.module.css';
 
 class InteractiveRoom extends Component {
