@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import classes from './Projects.module.css';
-import Project from '../../../components/Project/Project';
+import Project from './Project/Project';
 import projectDetails from '../../../assets/data/projects.json';
 //import imagen from '../../logo.svg'
 const images = require.context('../../../assets/images');

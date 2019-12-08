@@ -1,14 +1,16 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import RoomDevices from './RoomDevices/RoomDevices';
-import Projects from './Projects/Projects';
-import Menu from '../../components/Menu/Menu';
-import FullProject from '../../components/FullProject/FullProject';
+import RoomDevices from '../../components/Views/RoomDevices/RoomDevices';
+import Projects from '../../components/Views/Projects/Projects';
+import Menu from '../../components/UI/Menu/Menu';
+import FullProject from '../../components/Views/FullProject/FullProject';
 
 import classes from './InteractiveRoom.module.css';
 
 class InteractiveRoom extends Component {
+    
+    /** Main app Component */
 
     constructor(props){
         super(props);
@@ -18,11 +20,19 @@ class InteractiveRoom extends Component {
     }
 
     render(){
+        
+        const links = [
+            {text: 'room', url: '/room'},
+            {text: 'projects', url: '/projects'}
+        ] ;
+
         return (
             <div className={classes.InteractiveRoom}> 
-                    <Menu />
+                    <Menu 
+                        links={ links }/>
                     <Switch>
                         <Route path="/" exact component={RoomDevices} />
+                        <Route path="/room" exact component={RoomDevices} />
                         <Route path="/projects" exact component={Projects} />
                         <Route path="/projects/:id" exact component={FullProject} />
                     </Switch>

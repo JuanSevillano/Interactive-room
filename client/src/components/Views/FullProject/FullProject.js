@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import classes from './FullProject.module.css';
-import detailProjects from '../../assets/data/projects.json';
-import image from '../../assets/images/trending.png';
-const images = require.context('../../assets/images');
+import detailProjects from '../../../assets/data/projects.json';
+import image from '../../../assets/images/trending.png';
+const images = require.context('../../../assets/images');
 
 class FullProject extends Component {
 

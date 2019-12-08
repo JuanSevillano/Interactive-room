@@ -37,6 +37,7 @@
 .Header ul li a {
      color: white;
      text-decoration: none;
+     text-transform: capitalize;
 }
 
 .Header ul li a:hover, 
