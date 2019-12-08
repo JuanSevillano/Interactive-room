@@ -44,7 +44,7 @@ class LedController extends Component {
     
     handleColor = color => {
         
-        this.sendColor( color )
+        this.sendColor( color );
         this.setState({ color: color.hex })
     }
 
