@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
-import RoomDevices from '../../components/Views/RoomDevices/RoomDevices';
-import Projects from '../../components/Views/Projects/Projects';
+import RoomDevices from '../../components/views/RoomDevices/RoomDevices';
+import Projects from '../../components/views/Projects/Projects';
 import Menu from '../../components/UI/Menu/Menu';
-import FullProject from '../../components/Views/FullProject/FullProject';
+import FullProject from '../../components/views/FullProject/FullProject';
 
 import classes from './InteractiveRoom.module.css';
 

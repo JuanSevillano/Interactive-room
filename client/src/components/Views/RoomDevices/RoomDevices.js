@@ -1,5 +1,5 @@
 import React from 'react';
-import LedController from '../../Led/Led';
+import LedController from '../../controllers/Led/Led';
 
 import classes from './RoomDevices.module.css';
 

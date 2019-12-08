@@ -1,12 +1,12 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import classes from './Menu.module.css'
 import Logo from '../Sevi/Sevi';
 
 const Menu = props => {
 
-        const links = props.links.map( a => (
-            <li>
+        const links = props.links.map( (a, i) => (
+            <li key={i}>
                 <NavLink
                     to={a.url}
                     exact>{a.text}

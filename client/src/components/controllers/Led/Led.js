@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import ColorPicker from '../ColorPicker/ColorPicker';
+import ColorPicker from '../../tools/ColorPicker/ColorPicker';
 
-import Card from '../UI/Card/Card';
-import Switcher from '../UI/Switcher/Switcher';
+import Card from '../../UI/Card/Card';
+import Switcher from '../../tools/Switcher/Switcher';
 
 import classes from './Led.module.css';
 
@@ -11,6 +11,7 @@ class LedController extends Component {
     constructor(props){
         super(props);
         this.state = {
+            status: 'off',
             color: '#66ff',
             displayColorPicker: false
         }
