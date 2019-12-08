@@ -5,7 +5,7 @@ The main idea of the project is to interact with devices that we usually find in
 
 # Scripts: 
 
-  npm run interactive-room  ==> runs the whole project, Node (server + arduino) and React.
+  npm run dev  ==> runs the whole project, Node (server + arduino) and React.
   
   npm run server ==> starts nodeserver with nodemon.
   
