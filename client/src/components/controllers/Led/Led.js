@@ -13,8 +13,9 @@ class LedController extends Component {
     constructor(props){
         super(props);
         this.state = {
-            status: 'off',
-            color: '#66ff',
+            id: 'led_controller',
+            status: false, // false = off
+            color: '#66ff00',
             displayColorPicker: false
         }
     }
@@ -22,6 +23,15 @@ class LedController extends Component {
     componentDidMount(){
         /* TODO: call the current led state */
         this.getData();
+    }
+
+    shouldComponentUpdate(nextProps, nextState){
+        if(this.state !== nextState){
+            this.sendState(nextState);
+            return true;
+        }else{
+            return false;
+        }
     }
 
     getData = async () => {
@@ -44,22 +54,22 @@ class LedController extends Component {
     
     handleColor = color => {
         const hex = color.hex.toString();
-        this.sendColor( hex );
         this.setState({ color: color.hex });
     }
+    
+    statusHandler = event => {
+        this.setState({ status: !this.state.status })
+    }
 
-    sendColor = async color => {
-        const xx = JSON.stringify(color)
-        console.log(xx)
+    sendState = async nextState => {
+        const newState = JSON.stringify({...nextState})
         const opt = {
             url: '/room',
             method: 'post',
-            data: color
+            data: newState
         }
-        const data = await axios(opt);
-        const res = await data.response; 
-        console.log(data);
-        
+     
+        await axios(opt);
     }
 
     render(){
@@ -82,7 +92,7 @@ class LedController extends Component {
                                 <p>Turn On/Off :</p>
                                 <Switcher
                                     id="Led"
-                                    changed={this.props.statusHanlder} 
+                                    changed={this.statusHandler} 
                                 />
                             </section>
                         </fieldset>

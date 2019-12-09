@@ -5,16 +5,25 @@ const roomController = require('../controllers/room-controller');
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
-    console.log('algo')
     /** ask to controller for the devices status */
-    const devices = [{x: 1},{y: 2},{z: 3}];
-    res.status(200).send(devices);
+    res.status(200).send('ok');
 });
 
 router.post('/', (req, res, next) => {
-    const hex = Object.keys(req.body)[0]
-    roomController('setColor', hex);
-    res.status(200).send(hex);
+    /** TODO: this need to be re-make, it's a quickly test */
+
+    const device = JSON.parse(Object.keys(req.body)[0])
+    const id = device.id; // to indentify devices. Room controller is bad designed so far it's fixed to a LED only. 
+    const status = device.status;
+    const color = device.color;
+    if(status){
+        roomController('on');
+        roomController('setColor', color);
+    }else{
+        roomController('off');
+    }
+
+    res.status(200).send(id);
 });
 
 router.get('/off', (req, res, next) => {
