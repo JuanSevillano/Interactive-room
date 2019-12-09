@@ -1,0 +1,37 @@
+File to track the project's bugs, improvements and things TODO yet.
+
+
+
+:::IMPROVEMENTS:::
+
+    Server::
+    
+        - roomRouter.js - api needs to be handle way much better
+        - devices management [ craete a hall for devices in the server, connect to a database ]
+        - if the previous is done we can create a class where you can add any device w/out care type of it and active the handlers that should be implemented for this ] - [..think about johnny-five controllers in a general way that you can add any device]
+
+
+
+:::TODO:::
+
+
+    Server:: 
+
+        - add a websocket connection instead of http request. 
+
+
+    Client:: 
+
+        - create a dashboard view
+        - add Redux to manage app state 
+
+
+:::BUGS:::
+
+    Server::
+        - null
+
+    Client:: 
+        - null
+
+
