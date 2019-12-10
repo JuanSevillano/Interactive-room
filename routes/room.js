@@ -1,7 +1,7 @@
 const path = require('path');
 const express = require('express');
-const roomController = require('../controllers/room-controller');
-
+const RoomController = require('../controllers/room-controller');
+const instance = new RoomController(); 
 const router = express.Router();
 
 router.get('/', (req, res, next) => {
@@ -19,22 +19,22 @@ router.post('/', (req, res, next) => {
     console.log(device)
     
     if(status){
-        roomController('on');
-        roomController('setColor', color);
+        instance.ledOn(id);
+        instance.ledColor(id, color);
     }else{
-        roomController('off');
+        instance.ledOff();
     }
 
     res.status(200).send(id);
 });
 
 router.get('/off', (req, res, next) => {
-    roomController('off');
+    instance.ledOff();
     res.send('<h1>Turned off</h1>');
 });
 
 router.get('/blink', (req, res, next) => {
-    roomController('blink');
+    instance.ledBlink();
     res.send('<h1>Led is now red</h1>');
 });
 

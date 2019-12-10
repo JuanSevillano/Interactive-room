@@ -1,53 +1,48 @@
-const { Board, Led } = require("johnny-five");
-const board = new Board({repl: false}); // Disabling RELP due to is not required so far
+'use strict';
 
-let boardIsReady = false; 
-console.log('[ roomController, 5 ]  -  Starting board...')
+const { Board, Led } = require( "johnny-five")
 
-/** Components to be added to the board  */
-let led;
+module.exports = class RoomController {
 
-board.on("ready", () => { 
-    led = new Led.RGB({
-        pins: {
-            red: 6,
-            green: 5,
-            blue: 3
-        }
-    });
-    boardIsReady = true; 
-});
 
-const roomController = ( actionType, args ) => {
+    constructor(){
+        console.log('[ room-controller ] - Starting board');
+        this.boardIsReady = false; 
+        this.board = new Board({repl: false}); // Disabling RELP due to is not required so far
+        this.led = ''; 
+        this.board.on("ready", () => { 
+            this.led = new Led.RGB({
+                pins: {
+                    red: 6,
+                    green: 5,
+                    blue: 3
+                }
+            });
+            this.boardIsReady = true; 
+        });
+    }
 
-     if(boardIsReady){
+    /** the led is a unique reference still and that's 
+     * why is implemented with this.led instead of looking for the reference */
+    
+    ledOn (ref){
+         this.led.on()
+    }
 
-        led.on();
-        
-        switch(actionType){
-            case 'on': 
-                led.on()
-            break;
-            case 'off':
-                led.off()
-            break;
-            case 'setColor':
-                led.color(args)
-            break;
-            case 'blink':
-                led.blink()
-            case 'stop':
-                led.stop()
-            break;
-            case 'toggle': 
-                led.toggle()
-            break;
-            default: 
-                console.log(led)
-            break;
-        }
-     }
+    ledOff (ref){
+          this.led.off()
+    }
+
+    ledBlink (ref){
+         this.led.blink()
+    }
+
+    ledColor (ref, color){
+        this.led.color(color)
+    }
+
+    ledStop (ref){
+         this.led.stop()
+    }
 
 }
-
-module.exports = roomController;
