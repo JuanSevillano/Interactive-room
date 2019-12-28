@@ -1,39 +1,38 @@
 const path = require('path');
 const express = require('express');
-const roomController = require('../controllers/room-controller');
-
+const RoomController = require('../controllers/room-controller');
+const instance = new RoomController(); 
 const router = express.Router();
+const { parse , stringify } = require('flatted/cjs');
 
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
     /** ask to controller for the devices status */
-    res.status(200).send('ok');
+    const data = stringify(instance.getDevices())
+    
+    res.status(200).send(data);
 });
 
 router.post('/', (req, res, next) => {
     /** TODO: this need to be re-make, it's a quickly test */
 
     const device = JSON.parse(Object.keys(req.body)[0])
+    //console.log(device)
     const id = device.id; // to indentify devices. Room controller is bad designed so far it's fixed to a LED only. 
     const status = device.status;
-    const color = device.color;
+    const color = device.color['hex'];
+    
     if(status){
-        roomController('on');
-        roomController('setColor', color);
+        console.log(' im the colour ' , color )
+        instance.ledOn(id);
+        instance.ledColor(id, color);
+        res.status(200).send(id);
     }else{
-        roomController('off');
+        instance.ledOff();
+        res.status(200).send(id);
     }
 
-    res.status(200).send(id);
+    
 });
 
-router.get('/off', (req, res, next) => {
-    roomController('off');
-    res.send('<h1>Turned off</h1>');
-});
-
-router.get('/blink', (req, res, next) => {
-    roomController('blink');
-    res.send('<h1>Led is now red</h1>');
-});
 
 module.exports = router; 

@@ -1,53 +1,67 @@
-const { Board, Led } = require("johnny-five");
-const board = new Board({repl: false}); // Disabling RELP due to is not required so far
+'use strict';
+const { Board, Led, Leds } = require("johnny-five")
 
-let boardIsReady = false; 
-console.log('[ roomController, 5 ]  -  Starting board...')
+const devices = [];
 
-/** Components to be added to the board  */
-let led;
+class RoomController {
 
-board.on("ready", () => { 
-    led = new Led.RGB({
-        pins: {
-            red: 6,
-            green: 5,
-            blue: 3
-        }
-    });
-    boardIsReady = true; 
-});
+    constructor() {
+        console.log('[ room-controller ] - Starting board');
+        this.boardIsReady = false;
+        this.board = new Board({ repl: false }); // Disabling RELP due to is not required so far
+        this.led = ''
+        this.led2 = ''
+        this.led = ''
 
-const roomController = ( actionType, args ) => {
+        this.board.on("ready", () => {
 
-     if(boardIsReady){
+            this.led = new Led.RGB({
+                pins: {
+                    red: 6,
+                    green: 5,
+                    blue: 3,
+                }
+            });
 
-        led.on();
-        
-        switch(actionType){
-            case 'on': 
-                led.on()
-            break;
-            case 'off':
-                led.off()
-            break;
-            case 'setColor':
-                led.color(args)
-            break;
-            case 'blink':
-                led.blink()
-            case 'stop':
-                led.stop()
-            break;
-            case 'toggle': 
-                led.toggle()
-            break;
-            default: 
-                console.log(led)
-            break;
-        }
-     }
+            this.leds = new Leds([9, 10, 11]);
+
+            devices.push(this.led);
+            devices.push(this.led2);
+            devices.push(this.leds)
+
+            this.boardIsReady = true;
+        });
+    }
+
+    /** the led is a unique reference still and that's 
+     * why is implemented with this.led instead of looking for the reference */
+    ledOn(ref) {
+        this.led.on()
+        this.leds.on();
+    }
+
+    ledOff(ref) {
+        this.led.off()
+        this.leds.off();
+    }
+
+    ledBlink(ref) {
+        this.led.blink()
+    }
+
+    ledColor(ref, color) {
+        console.log(color);
+        this.led.color(color)
+    }
+
+    ledStop(ref) {
+        this.led.stop()
+    }
+
+    getDevices() {
+        return devices;
+    }
 
 }
 
-module.exports = roomController;
+module.exports = RoomController;
