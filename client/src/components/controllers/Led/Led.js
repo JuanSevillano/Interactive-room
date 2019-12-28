@@ -15,7 +15,7 @@ class LedController extends Component {
         this.state = {
             id: 'led_controller',
             status: false, // false = off
-            color: '#66ff00',
+            color: { hex: '#66ff00'},
             displayColorPicker: false
         }
     }
@@ -40,7 +40,6 @@ class LedController extends Component {
             method: 'get'
         }
         const data = await axios(opt);
-        const res = await data.response;
         console.log(data) 
     }
 

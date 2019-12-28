@@ -19,7 +19,7 @@ router.post('/', (req, res, next) => {
     //console.log(device)
     const id = device.id; // to indentify devices. Room controller is bad designed so far it's fixed to a LED only. 
     const status = device.status;
-    const color = device.color.hex;
+    const color = device.color['hex'];
     
     if(status){
         console.log(' im the colour ' , color )
