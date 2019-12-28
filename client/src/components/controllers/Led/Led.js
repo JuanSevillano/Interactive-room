@@ -41,7 +41,7 @@ class LedController extends Component {
         }
         const data = await axios(opt);
         const res = await data.response;
-        console.log(res) 
+        console.log(data) 
     }
 
     handleClick = () => {
@@ -53,8 +53,7 @@ class LedController extends Component {
     };
     
     handleColor = color => {
-        const hex = color.hex.toString();
-        this.setState({ color: color.hex });
+        this.setState({ color });
     }
     
     statusHandler = event => {
@@ -84,7 +83,7 @@ class LedController extends Component {
                                     clicked={this.handleClick}
                                     closed={this.handleClose}
                                     colorChanged={this.handleColor}
-                                    currentColor={this.state.color}
+                                    currentColor={this.state.color.hex}
                                     displayColorPicker={this.state.displayColorPicker}
                                 /> 
                             </section>      

@@ -1,48 +1,67 @@
 'use strict';
+const { Board, Led, Leds } = require("johnny-five")
 
-const { Board, Led } = require( "johnny-five")
+const devices = [];
 
-module.exports = class RoomController {
+class RoomController {
 
-
-    constructor(){
+    constructor() {
         console.log('[ room-controller ] - Starting board');
-        this.boardIsReady = false; 
-        this.board = new Board({repl: false}); // Disabling RELP due to is not required so far
-        this.led = ''; 
-        this.board.on("ready", () => { 
+        this.boardIsReady = false;
+        this.board = new Board({ repl: false }); // Disabling RELP due to is not required so far
+        this.led = ''
+        this.led2 = ''
+        this.led = ''
+
+        this.board.on("ready", () => {
+
             this.led = new Led.RGB({
                 pins: {
                     red: 6,
                     green: 5,
-                    blue: 3
+                    blue: 3,
                 }
             });
-            this.boardIsReady = true; 
+
+            this.leds = new Leds([9, 10, 11]);
+
+            devices.push(this.led);
+            devices.push(this.led2);
+            devices.push(this.leds)
+
+            this.boardIsReady = true;
         });
     }
 
     /** the led is a unique reference still and that's 
      * why is implemented with this.led instead of looking for the reference */
-    
-    ledOn (ref){
-         this.led.on()
+    ledOn(ref) {
+        this.led.on()
+        this.leds.on();
     }
 
-    ledOff (ref){
-          this.led.off()
+    ledOff(ref) {
+        this.led.off()
+        this.leds.off();
     }
 
-    ledBlink (ref){
-         this.led.blink()
+    ledBlink(ref) {
+        this.led.blink()
     }
 
-    ledColor (ref, color){
+    ledColor(ref, color) {
+        console.log(color);
         this.led.color(color)
     }
 
-    ledStop (ref){
-         this.led.stop()
+    ledStop(ref) {
+        this.led.stop()
+    }
+
+    getDevices() {
+        return devices;
     }
 
 }
+
+module.exports = RoomController;
