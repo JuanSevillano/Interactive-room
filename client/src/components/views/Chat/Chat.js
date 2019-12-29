@@ -1,89 +1,79 @@
 import React, { useState, useEffect, useRef } from 'react'
-import SimplePeer from 'simple-peer'
+import axios from '../../../axios-connect' // to start peer connection using http signaling 
+import SimplePeer from 'simple-peer' // currrent integration without redux 
+
+import Overlay from '../../UI/Overlay/Overlay'
+
+import Camera from './Camera/Camera'
 import classes from './Chat.module.css'
+
+
+// const isStarter = axios.get(`/chat/:${roomId}`)
+/*
+peer1.on('signal', data => {
+    peer2.signal(data)
+})
+
+peer2.on('signal', data => {
+    peer1.signal(data)
+})
+
+peer2.on('stream', stream => {
+    // got remote video stream, now let's show it in a video tag
+    var video = document.querySelector('video')
+
+    if ('srcObject' in video) {
+        video.srcObject = stream
+    } else {
+        video.src = window.URL.createObjectURL(stream) // for older browsers
+    }
+
+    video.play()
+})
+*/
 
 const Chat = props => {
 
+
+    const [isLogin, setIsLogin] = useState(true);
     const [userId, setUserId] = useState('')
+    const [room, setRoom] = useState('');
+
     const [message, setMessage] = useState('')
+
+    const [userdLogged, setUserLogged] = useState({});
     const [isStarter, setIsStarter] = useState(true);
 
-    const peerRef = useRef(null)
-    const peer1Ref = useRef(null)
 
-    useEffect(() => {
+    const connection = new SimplePeer({ initiator: true });
+    const connectionTwo = new SimplePeer();
 
-        // Older browsers might not implement mediaDevices at all, so we set an empty object first
-        if (navigator.mediaDevices === undefined) {
-            navigator.mediaDevices = {};
-        }
-
-        // Some browsers partially implement mediaDevices. We can't just assign an object
-        // with getUserMedia as it would overwrite existing properties.
-        // Here, we will just add the getUserMedia property if it's missing.
-        if (navigator.mediaDevices.getUserMedia === undefined) {
-            navigator.mediaDevices.getUserMedia = function (constraints) {
-
-                // First get ahold of the legacy getUserMedia, if present
-                var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-
-                // Some browsers just don't implement it - return a rejected promise with an error
-                // to keep a consistent interface
-                if (!getUserMedia) {
-                    return Promise.reject(new Error('getUserMedia is not implemented in this browser'));
-                }
-
-                // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
-                return new Promise(function (resolve, reject) {
-                    getUserMedia.call(navigator, constraints, resolve, reject);
-                });
-            }
-        }
-
-        navigator.mediaDevices.getUserMedia({ audio: true, video: true })
-            .then(function (stream) {
-                peerRef.current = new SimplePeer({ initiator: true, stream: stream })
-                peer1Ref.current = new SimplePeer({ stream: stream })
-
-                peerRef.current.on('signal', data => {
-                    peer1Ref.current.signal(data)
-                })
-
-                peer1Ref.current.on('signal', data => {
-                    peerRef.current.signal(data)
-                })
-
-                peer1Ref.current.on('stream', stream => {
-                    // got remote video stream, now let's show it in a video tag
-                    var video = document.querySelector('video')
-
-                    if ('srcObject' in video) {
-                        video.srcObject = stream
-                    } else {
-                        video.src = window.URL.createObjectURL(stream) // for older browsers
-                    }
-
-                    video.play()
-                })
-            })
-            .catch(function (err) {
-                console.log(err.name + ": " + err.message);
-            });
-
-
-
-    }, [])
+    connection.on('signal', data => {
+        connectionTwo.signal(data);
+    })
 
 
     const userHandler = input => setUserId(input.target.value)
     const messageHandler = input => setMessage(input.target.value)
+    const roomHandler = input => setRoom(input.target.value)
+
     const starterHandler = input => setIsStarter(prevState => !prevState);
 
-    const logginHandler = e => console.log(isStarter) // dispatch with redux 
+    const overlayHandler = () => setIsLogin(prevState => !prevState);
+
+    const logginHandler = async () => {
+        // this should be update and dispatch with redux   
+        // User session and stream should be move to redux logic, i think so. 
+        const data = { userId, room }
+        const response = await axios.post('/chat', data);
+        setIsLogin(false)
+        console.log(response)
+
+    }
     const sendMessage = e => console.log('sending message') // use simple-peer
 
     return (< div className={classes.Chat} >
-        <div className={classes.Overlay} > </div>
+
         <div className={classes.Message} >
             <input
                 type="text"
@@ -95,22 +85,26 @@ const Chat = props => {
         </div>
         <div className={classes.Users} > Connected Users</div>
         <div className={classes.Login} >
-            <input type="text"
-                onChange={userHandler}
-                placeholder="username"
-                value={userId} />
-            <input
-                type="checkbox"
-                onChange={starterHandler}
-                defaultChecked
-                value={isStarter}
-            />
-            <button onClick={logginHandler} > login </button >
         </div>
         <div className={classes.History} >
-            <video> Not suported video </video>
+            {isLogin === false ? <Camera /> : null}
         </div>
-    </div>)
+        <Overlay
+            color="rgba(0,0,0,0.8)"
+            active={isLogin}
+            closed={overlayHandler}>
+            <input type="text"
+                onChange={userHandler}
+                placeholder="User name"
+                value={userId} />
+            <input
+                type="text"
+                placeholder="Room to join"
+                onChange={roomHandler}
+                value={room} />
+            <button onClick={logginHandler} > login </button >
+        </Overlay>
+    </div >)
 }
 
 export default Chat
