@@ -4,11 +4,11 @@ import { BrowserRouter } from 'react-router-dom';
 
 import InteractiveRoom from './containers/InteractiveRoom/InteractiveRoom';
 
-function App() {
+function App(props) {
   return (
     <div className="App">
       <BrowserRouter>
-        <InteractiveRoom />
+        <InteractiveRoom/>
       </BrowserRouter>
     </div>
   );

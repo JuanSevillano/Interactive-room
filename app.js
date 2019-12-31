@@ -20,7 +20,8 @@ app.use((req, res, next) => {
 
 app.listen(5000, '0.0.0.0', err => {
     if(err)
-        console.log('[ app.js, 16 ] - ', err)
-    console.log('[ app.js, 16 ] - Server Started! =D ');
+        console.log('[ app.js, 23 ] - ', err)
+    console.log('[ app.js, 24 ] - Server Started! =D ');
 });
-console.log('[ app.js, 38 ] - Starting Server...');
+
+console.log('[ app.js, 26 ] - Starting Server...');

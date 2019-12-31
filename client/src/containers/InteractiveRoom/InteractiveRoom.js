@@ -33,11 +33,11 @@ class InteractiveRoom extends Component {
                     <Menu 
                         links={ links }/>
                     <Switch>
-                        <Route path="/" exact component={RoomDevices} />
                         <Route path="/room" exact component={RoomDevices} />
                         <Route path="/chat" exact component={Chat} />
                         <Route path="/projects" exact component={Projects} />
                         <Route path="/projects/:id" exact component={FullProject} />
+                        <Route path="/" component={RoomDevices} />
                     </Switch>
             </div>
       )
