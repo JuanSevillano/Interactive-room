@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { connect } from 'redux'
+import { connect } from 'react-redux'
 import axios from '../../../axios-connect' // to start peer connection using http signaling 
-import fb from '../../../firebase-config'
+import fb from '../../../firebase-config' // using firebase for signalining
 
 import SimplePeer from 'simple-peer' // currrent integration without redux 
 
@@ -10,6 +10,7 @@ import Camera from './Camera/Camera'
 
 import classes from './Chat.module.css'
 
+import types from '../../../store/actions/chat'
 
 // const isStarter = axios.get(`/chat/:${roomId}`)
 /*
@@ -46,29 +47,34 @@ const Chat = props => {
 
     // CONNECTION STATE 
     let connection;
+    const [enteredRoom, setEnteredRoom] = useState('')
     const [rooms, setRooms] = useState('')
     const [isConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
-        // ADDING LISTENER TO FIREBASE ROOMS REAL-TIME-DATABASE
-        // RETREIVING ALL THE EXISTING ROOMS 
-        fb.getDbInstance().ref('rooms/').once('value', data => setRooms(data.val()));
+        // ADDING LISTENER TO FIREBASE ROOMS REAL-TIME-DATABASE 
+        // AND DISPATCHING REDUX HANDLERS 
+        fb.getDbInstance()
+            .ref('rooms/').
+            once('value', data => props.onInitialRooms(data.val()))
 
 
-        fb.getDbInstance().ref('rooms/').on('child_added', child => {
-            // handle new room
-            console.log('room on child added:', room)
-        })
+        fb.getDbInstance()
+            .ref('rooms/')
+            .on('child_added', child => props.onRoomAdded(child.val()))
 
-        fb.getDbInstance().ref('rooms/').on('child_changed', (snapshot) => handleData(snapshot))
+        fb.getDbInstance()
+            .ref('rooms/')
+            .on('child_changed', (child) => props.onRoomUpdated(child.val()))
 
     }, [])
 
     const handleData = snapshot => {
-        console.log('room on child changed: ', room)
         // if my room had been updated
+        console.log('room on child changed: ', enteredRoom)
         console.log('updated room: => ', snapshot.val())
-        const isMyRoom = rooms[room.trim()] || false ;
+        const isMyRoom = rooms[enteredRoom];
+        console.log('is my Room: ', isMyRoom)
         if (connection && isMyRoom) {
             console.log('connection exist and isMyRoom')
             console.log('my room ', isMyRoom)
@@ -89,9 +95,11 @@ const Chat = props => {
     const logginHandler = () => {
         // this should be update and dispatch with redux   
         // User session and stream should be move to redux logic, i think so. 
-
+        props.onLogin(room, userId)
 
         const exist = rooms[room.trim()] || false;
+        setEnteredRoom(room)
+
 
         if (exist) {
 
@@ -108,7 +116,6 @@ const Chat = props => {
                 }
 
                 fb.getDbInstance().ref('rooms/' + exist.room).update(updated)
-                setIsLogin(false)
             })
 
             connection.on('connect', () => {
@@ -129,7 +136,6 @@ const Chat = props => {
                     isFull: false
                 }
                 fb.getDbInstance().ref('rooms/' + newRoom.room).set(newRoom)
-                setIsLogin(false)
             })
 
             connection.on('connect', () => {
@@ -138,8 +144,6 @@ const Chat = props => {
             })
         }
 
-        console.log('room on login:', room)
-        
     }
 
     const sendMessage = e => console.log('sending message') // use simple-peer
@@ -157,6 +161,8 @@ const Chat = props => {
         </div>
         <div className={classes.Users} > Connected Users</div>
         <div className={classes.Login} >
+            <p>Usuario{props.user}</p>
+            <p>Room{props.room}</p>
         </div>
         <div className={classes.History} >
             {isLogin === false ? <Camera /> : null}
@@ -179,4 +185,21 @@ const Chat = props => {
     </div >)
 }
 
-export default Chat
+
+const mapStateToProps = state => {
+    return {
+        room: state.roomName,
+        user: state.userName
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onInitialRooms: rooms => dispatch({ type: types.ON_INITIAL_ROOMS, payload: { rooms } }),
+        onRoomUpdated: room => dispatch({ type: types.ON_ROOM_UPDATED, payload: { room } }),
+        onRoomAdded: room => dispatch({ type: types.ON_ROOM_ADDED, payload: { room } }),
+        onLogin: (user, room) => dispatch({ type: types.ON_LOGIN, payload: { user, room } })
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Chat)
