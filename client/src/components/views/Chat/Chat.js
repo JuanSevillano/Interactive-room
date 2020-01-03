@@ -55,8 +55,8 @@ const Chat = props => {
         // ADDING LISTENER TO FIREBASE ROOMS REAL-TIME-DATABASE 
         // AND DISPATCHING REDUX HANDLERS 
         fb.getDbInstance()
-            .ref('rooms/').
-            once('value', data => props.onInitialRooms(data.val()))
+            .ref('rooms/')
+            .once('value', data => props.onInitialRooms(data.val()))
 
 
         fb.getDbInstance()
@@ -67,7 +67,7 @@ const Chat = props => {
             .ref('rooms/')
             .on('child_changed', (child) => props.onRoomUpdated(child.val()))
 
-    }, [])
+    })
 
     const handleData = snapshot => {
         // if my room had been updated
@@ -95,7 +95,7 @@ const Chat = props => {
     const logginHandler = () => {
         // this should be update and dispatch with redux   
         // User session and stream should be move to redux logic, i think so. 
-        props.onLogin(room, userId)
+        props.onLogin(userId, room)
 
         const exist = rooms[room.trim()] || false;
         setEnteredRoom(room)
@@ -162,7 +162,7 @@ const Chat = props => {
         <div className={classes.Users} > Connected Users</div>
         <div className={classes.Login} >
             <p>Usuario{props.user}</p>
-            <p>Room{props.room}</p>
+            <p>Room{props.room.room}</p>
         </div>
         <div className={classes.History} >
             {isLogin === false ? <Camera /> : null}
