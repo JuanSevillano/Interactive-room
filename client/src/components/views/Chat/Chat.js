@@ -1,6 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { connect } from 'react-redux'
-import axios from '../../../axios-connect' // to start peer connection using http signaling 
+import React, { Component } from 'react'
 import fb from '../../../firebase-config' // using firebase for signalining
 
 import SimplePeer from 'simple-peer' // currrent integration without redux 
@@ -37,152 +35,249 @@ peer2.on('stream', stream => {
 */
 
 
-const Chat = props => {
+class Chat extends Component {
 
     // UI STATE 
-    const [isLogin, setIsLogin] = useState(true)
-    const [userId, setUserId] = useState('')
-    const [room, setRoom] = useState('')
-    const [message, setMessage] = useState('')
-
-    // CONNECTION STATE 
-    let connection;
-    const [enteredRoom, setEnteredRoom] = useState('')
-    const [rooms, setRooms] = useState('')
-    const [isConnected, setIsConnected] = useState(false);
-
-    useEffect(() => {
-        // ADDING LISTENER TO FIREBASE ROOMS REAL-TIME-DATABASE 
-        // AND DISPATCHING REDUX HANDLERS 
-        fb.getDbInstance()
-            .ref('rooms/')
-            .once('value', data => props.onInitialRooms(data.val()))
-
-
-        fb.getDbInstance()
-            .ref('rooms/')
-            .on('child_added', child => props.onRoomAdded(child.val()))
-
-        fb.getDbInstance()
-            .ref('rooms/')
-            .on('child_changed', (child) => props.onRoomUpdated(child.val()))
-
-    })
-
-    const handleData = snapshot => {
-        // if my room had been updated
-        console.log('room on child changed: ', enteredRoom)
-        console.log('updated room: => ', snapshot.val())
-        const isMyRoom = rooms[enteredRoom];
-        console.log('is my Room: ', isMyRoom)
-        if (connection && isMyRoom) {
-            console.log('connection exist and isMyRoom')
-            console.log('my room ', isMyRoom)
-            connection.signal(isMyRoom.secondUser.candidate)
+    constructor(props) {
+        super(props);
+        this.connection = undefined;
+        this.state = {
+            rooms: {},
+            isLogin: true,
+            isConnected: false,
+            userId: 'invited',
+            room: '',
+            message: ''
         }
-        //setRooms(prev => ({ ...prev, prev[snapshot.val().room]: snapshot.val() }));
+
     }
 
+    componentDidMount() {
+        // Retriving initial data 
+        fb.getDbInstance()
+            .ref('rooms/')
+            .once('value', snapshot => this.setState({ rooms: snapshot.val() }))
+
+        fb.getDbInstance()
+            .ref('rooms/')
+            .on('child_changed', this.roomUpdatedHandler)
+    }
+
+    // CONNECTION STATE 
+    roomAddedHandler = value => {
+        const rooms = {
+            ...this.state.rooms,
+            [value.room]: value
+        }
+        this.setState({ rooms })
+    }
+
+
+
+    roomUpdatedHandler = snapshot => {
+        // if my room had been updated
+        const updated = snapshot.val();
+        if (this.props.history.location.state) {
+            const sessionInfo = this.props.history.location.state;
+            if (sessionInfo.room === updated.room && !this.state.isConnected) {
+                if (this.connection) {
+                    this.connection.signal(updated.secondUser.candidate)
+                }
+            }
+        }
+    }
+
+    overlayHandler = () => this.setState({ isLogin: !this.state.isLogin });
     // INPUT HANDLERS 
-    const userHandler = input => setUserId(input.target.value)
-    const roomHandler = input => setRoom(input.target.value)
-    const messageHandler = input => setMessage(input.target.value)
+    userHandler = input => {
+        const value = input.target.value.trim()
+        this.setState({ userId: value })
+    }
+    roomHandler = input => {
+        const value = input.target.value.trim()
+        this.setState({ room: value })
+    }
+    messageHandler = input => {
+        const value = input.target.value
+        this.setState({ message: value })
+    }
 
 
-    const overlayHandler = () => setIsLogin(prevState => !prevState);
-
-
-    const logginHandler = () => {
+    logginHandler = () => {
         // this should be update and dispatch with redux   
         // User session and stream should be move to redux logic, i think so. 
-        props.onLogin(userId, room)
+        //props.onLogin(userId, room);
+        this.setState({ isLogin: false })
+        const exist = this.state.rooms[this.state.room.trim()] || false;
+        console.log('exist', exist)
 
-        const exist = rooms[room.trim()] || false;
-        setEnteredRoom(room)
+        if (!exist) {
 
+            this.connection = new SimplePeer({ initiator: true, trickle: false })
+            this.connection.on('signal', candidate => {
 
-        if (exist) {
-
-            connection = new SimplePeer()
-            const otherUser = exist.firstUser.candidate;
-            connection.signal(otherUser)
-
-            connection.on('signal', candidate => {
-
-                const updated = {
-                    ...exist
-                    , secondUser: { id: userId.trim(), candidate }
-                    , isFull: true
+                const newRoom = {
+                    room: this.state.room,
+                    firstUser: { id: this.state.userId, candidate },
+                    secondUser: { id: '', candidate: '' },
+                    isFull: false
                 }
 
-                fb.getDbInstance().ref('rooms/' + exist.room).update(updated)
+                fb.getDbInstance()
+                    .ref('rooms/' + this.state.room)
+                    .set(newRoom)
+
+                this.props.history.push({
+                    pathname: '/chat',
+                    search: `?started=true&room=${this.state.room}`,
+                    state: { room: this.state.room, user: this.state.userId }
+                })
             })
 
-            connection.on('connect', () => {
-                console.log('Connected when exist')
-                setIsConnected(true)
+            this.connection.on('connect', () => {
+                console.log('Is connected')
+                this.connection.send('hola2')
+                this.setState({ isConnected: true })
             })
+
+            this.connection.on('data', data => {
+                const message = new TextDecoder("utf-8").decode(data)
+                console.log('data received: ', message)
+
+            })
+
+            this.connection.on('stream', stream => {
+
+                const remoteVideo = document.querySelector('#remote-video')
+                if ('srcObject' in remoteVideo) {
+                    remoteVideo.srcObject = stream
+                } else {
+                    remoteVideo.src = window.URL.createObjectURL(stream)
+                }
+
+            })
+
 
 
         } else {
-
-            connection = new SimplePeer({ initiator: true, trickle: false });
-            connection.on('signal', candidate => {
-
-                const newRoom = {
-                    room: room.trim(),
-                    firstUser: { id: userId.trim(), candidate },
-                    secondUser: { id: '', signal: '' },
-                    isFull: false
+            // Updating an existing room 
+            const otherPeer = exist.firstUser.candidate
+            this.connection = new SimplePeer()
+            this.connection.signal(otherPeer)
+            this.connection.on('signal', candidate => {
+                const updated = {
+                    ...exist,
+                    secondUser: { id: this.state.userId, candidate },
+                    isFull: true
                 }
-                fb.getDbInstance().ref('rooms/' + newRoom.room).set(newRoom)
+
+                fb.getDbInstance()
+                    .ref('rooms/' + exist.room)
+                    .update(updated)
+
+                this.props.history.push({
+                    pathname: '/chat',
+                    search: `?started=true&room=${this.state.room}`,
+                    state: { room: this.state.room, user: this.state.userId }
+                })
             })
 
-            connection.on('connect', () => {
-                console.log('connected when doesn\'t exist ');
-                setIsConnected(true)
+            this.connection.on('connect', () => {
+                console.log('Is connected')
+                this.connection.send('hola')
+                this.setState({ isConnected: true })
+            })
+
+            this.connection.on('data', data => {
+                const message = new TextDecoder("utf-8").decode(data)
+                console.log('data received: ', message.user)
+
+            })
+
+            this.connection.on('stream', stream => {
+                console.log('recibiendo stream desde otro peer')
+                const remoteVideo = document.querySelector(classes.RemoteVideo)
+                if ('srcObject' in remoteVideo) {
+                    remoteVideo.srcObject = stream
+                } else {
+                    remoteVideo.src = window.URL.createObjectURL(stream)
+                }
+                remoteVideo.play()
+
             })
         }
 
+
     }
 
-    const sendMessage = e => console.log('sending message') // use simple-peer
+    sendMessage = () => {
+        if (this.connection) {
+            const message = {
+                user: this.state.userId,
+                message: this.state.message
+            };
+            this.connection.send(message)
+        }
+    }
 
-    return (< div className={classes.Chat} >
 
-        <div className={classes.Message} >
-            <input
-                type="text"
-                onChange={messageHandler}
-                value={message}
-                placeholder="write a message =)" />
-            <button onClick={sendMessage} > send </button >
+    handleLocalStream = (stream) => {
+        console.log('por aquí pasa', stream)
+        if (this.connection) {
+            console.log('entra', stream)
+            this.connection.addStream(stream)
+        } else {
+            console.log('no entra')
+        }
+    }
 
-        </div>
-        <div className={classes.Users} > Connected Users</div>
-        <div className={classes.Login} >
-            <p>Usuario{props.user}</p>
-            <p>Room{props.room.room}</p>
-        </div>
-        <div className={classes.History} >
-            {isLogin === false ? <Camera /> : null}
-        </div>
-        <Overlay
-            color="rgba(0,0,0,0.8)"
-            active={isLogin}
-            closed={overlayHandler}>
-            <input type="text"
-                onChange={userHandler}
-                placeholder="User name"
-                value={userId} />
-            <input
-                type="text"
-                placeholder="Room to join"
-                onChange={roomHandler}
-                value={room} />
-            <button onClick={logginHandler} > login </button >
-        </Overlay>
-    </div >)
+
+    render() {
+
+        const chatContainer = this.state.isLogin === false && this.state.isConnected ? (
+            <div className={classes.History}>
+                <video id="remote-video" className={classes.RemoteVideo} />
+                <div className={classes.LocalVideo}>
+                    <Camera stream={this.handleLocalStream} />
+                </div>
+            </div>
+        ) : null
+
+        return (<div className={classes.Chat} >
+            <div className={classes.Message} >
+                <input
+                    type="text"
+                    onChange={this.messageHandler}
+                    value={this.state.message}
+                    placeholder="write a message =)" />
+                <button onClick={this.sendMessage} > send </button >
+
+            </div>
+            <div className={classes.Users} > Connected Users</div>
+            <div className={classes.Login} >
+                <p>Usuario: {this.state.userId}</p>
+                <p>Room: {this.state.room}</p>
+            </div>
+
+            {chatContainer}
+
+            <Overlay
+                color="rgba(0,0,0,0.8)"
+                active={this.state.isLogin}
+                closed={this.overlayHandler}>
+                <input type="text"
+                    onChange={this.userHandler}
+                    placeholder="User name"
+                    value={this.state.userId} />
+                <input
+                    type="text"
+                    placeholder="Room to join"
+                    onChange={this.roomHandler}
+                    value={this.state.room} />
+                <button onClick={this.logginHandler} > login </button >
+            </Overlay>
+        </div >)
+    }
 }
 
 
@@ -196,10 +291,10 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         onInitialRooms: rooms => dispatch({ type: types.ON_INITIAL_ROOMS, payload: { rooms } }),
+        onRoomAdded: roomAdded => dispatch({ type: types.ON_ROOM_ADDED, payload: { roomAdded } }),
         onRoomUpdated: room => dispatch({ type: types.ON_ROOM_UPDATED, payload: { room } }),
-        onRoomAdded: room => dispatch({ type: types.ON_ROOM_ADDED, payload: { room } }),
         onLogin: (user, room) => dispatch({ type: types.ON_LOGIN, payload: { user, room } })
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Chat)
+export default Chat

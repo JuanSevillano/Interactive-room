@@ -1,13 +1,15 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Camera, { FACING_MODES, IMAGE_TYPES } from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
 
 const CameraController = props => {
 
+    const [stream, setStream ] = useState('')
+
     useEffect(() => {
         //console.log('this camera component is re-rendering...')
       
-    }, [])
+    }, [props])
 
     const handleTakePhoto = (dataUri) => {
         // Do stuff with the photo...
@@ -25,6 +27,7 @@ const CameraController = props => {
 
     const handleCameraStart = (stream) => {
         // Send this stream by props to the parent Chat container 
+        setStream(stream);
         //console.log('handleCameraStart');
     }
 
@@ -38,16 +41,15 @@ const CameraController = props => {
             onTakePhotoAnimationDone={handleTakePhotoAnimationDone}
             onCameraError={handleCameraError}
             idealFacingMode={FACING_MODES.ENVIRONMENT}
-            idealResolution={{ width: 640, height: 480 }}
             imageType={IMAGE_TYPES.JPG}
             imageCompression={0.97}
             isMaxResolution={true}
             isImageMirror={false}
-            isSilentMode={false}
+            isSilentMode={true}
             isDisplayStartCameraError={true}
             isFullscreen={false}
             sizeFactor={1}
-            onCameraStart={handleCameraStart}
+            onCameraStart={props.stream}
             onCameraStop={handleCameraStop}
         />
     );
