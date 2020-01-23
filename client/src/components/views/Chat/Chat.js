@@ -42,6 +42,7 @@ class Chat extends Component {
         super(props);
         this.connection = undefined;
         this.state = {
+            currentSession: {},
             rooms: {},
             isLogin: true,
             isConnected: false,
@@ -77,15 +78,28 @@ class Chat extends Component {
     roomUpdatedHandler = snapshot => {
         // if my room had been updated
         const updated = snapshot.val();
-        if (this.props.history.location.state) {
-            const sessionInfo = this.props.history.location.state;
-            if (sessionInfo.room === updated.room && !this.state.isConnected) {
-                if (this.connection) {
+
+        if (this.state.currentSession.room === updated.room) {
+
+            if (!this.state.isConnected) {
+
+                this.connection.signal(updated.secondUser.candidate)
+
+            } else {
+
+                if (this.state.initiator) {
                     this.connection.signal(updated.secondUser.candidate)
+                } else {
+                    this.connection.signal(updated.firstUser.candidate)
                 }
+
             }
+
+            this.setState({ currentSession: updated })
         }
+
     }
+
 
     overlayHandler = () => this.setState({ isLogin: !this.state.isLogin });
     // INPUT HANDLERS 
@@ -116,22 +130,36 @@ class Chat extends Component {
             this.connection = new SimplePeer({ initiator: true, trickle: false })
             this.connection.on('signal', candidate => {
 
-                const newRoom = {
-                    room: this.state.room,
-                    firstUser: { id: this.state.userId, candidate },
-                    secondUser: { id: '', candidate: '' },
-                    isFull: false
+                if (this.state.isConnected) {
+                    console.log('Signal cuando está connected')
+                    const newData = {
+                        ...this.state.currentSession,
+                        firstUser: { id: this.state.userId, candidate }
+                    }
+
+                    console.log('newData !exist', newData);
+                    this.setState({ currentSession: newData })
+
+
+                    fb.getDbInstance()
+                        .ref('rooms/' + newData.room)
+                        .update(newData)
+
+                } else {
+                    const newRoom = {
+                        room: this.state.room,
+                        firstUser: { id: this.state.userId, candidate },
+                        secondUser: { id: '', candidate: '' },
+                        isFull: false
+                    }
+
+                    fb.getDbInstance()
+                        .ref('rooms/' + this.state.room)
+                        .set(newRoom)
+
+                    this.setState({ currentSession: newRoom, initiator: true })
                 }
 
-                fb.getDbInstance()
-                    .ref('rooms/' + this.state.room)
-                    .set(newRoom)
-
-                this.props.history.push({
-                    pathname: '/chat',
-                    search: `?started=true&room=${this.state.room}`,
-                    state: { room: this.state.room, user: this.state.userId }
-                })
             })
 
             this.connection.on('connect', () => {
@@ -165,21 +193,34 @@ class Chat extends Component {
             this.connection = new SimplePeer()
             this.connection.signal(otherPeer)
             this.connection.on('signal', candidate => {
-                const updated = {
-                    ...exist,
-                    secondUser: { id: this.state.userId, candidate },
-                    isFull: true
+
+                if (this.state.isConnected) {
+
+                    const newData = {
+                        ...exist,
+                        secondUser: { id: this.state.userId, candidate }
+                    }
+
+                    this.setState({ currentSession: newData})
+
+                    fb.getDbInstance()
+                        .ref('rooms/' + newData.room)
+                        .update(newData)
+
+                } else {
+                    const updated = {
+                        ...exist,
+                        secondUser: { id: this.state.userId, candidate },
+                        isFull: true
+                    }
+
+                    fb.getDbInstance()
+                        .ref('rooms/' + exist.room)
+                        .update(updated)
+
+                    this.setState({ currentSession: updated, initiator: false })
                 }
 
-                fb.getDbInstance()
-                    .ref('rooms/' + exist.room)
-                    .update(updated)
-
-                this.props.history.push({
-                    pathname: '/chat',
-                    search: `?started=true&room=${this.state.room}`,
-                    state: { room: this.state.room, user: this.state.userId }
-                })
             })
 
             this.connection.on('connect', () => {
@@ -192,6 +233,10 @@ class Chat extends Component {
                 const message = new TextDecoder("utf-8").decode(data)
                 console.log('data received: ', message.user)
 
+            })
+
+            this.connection.on('negotiation', data => {
+                console.log('algo pasa')
             })
 
             this.connection.on('stream', stream => {
