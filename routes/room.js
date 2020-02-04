@@ -1,15 +1,14 @@
 const path = require('path');
 const express = require('express');
 const RoomController = require('../controllers/room-controller');
-const instance = new RoomController(); 
 const router = express.Router();
-const { parse , stringify } = require('flatted/cjs');
+// const { parse , stringify } = require('flatted/cjs'); // deleting this array logics, not useful anymore 
+
+const controller = new RoomController(); 
 
 router.get('/', async (req, res, next) => {
     /** ask to controller for the devices status */
-    const data = stringify(instance.getDevices())
-    
-    res.status(200).send(data);
+    res.status(200).send('ok');
 });
 
 router.post('/', (req, res, next) => {
@@ -23,11 +22,11 @@ router.post('/', (req, res, next) => {
     
     if(status){
         console.log(' im the colour ' , color )
-        instance.ledOn(id);
-        instance.ledColor(id, color);
+        controller.ledOn(id);
+        controller.ledColor(id, color);
         res.status(200).send(id);
     }else{
-        instance.ledOff();
+        controller.ledOff();
         res.status(200).send(id);
     }
 

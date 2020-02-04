@@ -4,8 +4,6 @@ import 'react-html5-camera-photo/build/css/index.css';
 
 const CameraController = props => {
 
-    const [stream, setStream ] = useState('')
-
     useEffect(() => {
         //console.log('this camera component is re-rendering...')
       
@@ -23,12 +21,6 @@ const CameraController = props => {
 
     const handleCameraError = (error) => {
         //console.log('handleCameraError');
-    }
-
-    const handleCameraStart = (stream) => {
-        // Send this stream by props to the parent Chat container 
-        setStream(stream);
-        //console.log('handleCameraStart');
     }
 
     const handleCameraStop = () => {

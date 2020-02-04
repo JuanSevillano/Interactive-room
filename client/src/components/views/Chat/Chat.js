@@ -46,7 +46,7 @@ class Chat extends Component {
             rooms: {},
             isLogin: true,
             isConnected: false,
-            userId: 'invited',
+            userId: '',
             room: '',
             message: ''
         }
@@ -78,23 +78,17 @@ class Chat extends Component {
     roomUpdatedHandler = snapshot => {
         // if my room had been updated
         const updated = snapshot.val();
-
-        if (this.state.currentSession.room === updated.room) {
-
+        console.log(updated)
+        if (this.state.room === updated.room) {
             if (!this.state.isConnected) {
-
-                this.connection.signal(updated.secondUser.candidate)
-
-            } else {
-
                 if (this.state.initiator) {
-                    this.connection.signal(updated.secondUser.candidate)
+                    if(updated.secondUser.candidate !== ""){
+                        this.connection.signal(updated.secondUser.candidate)
+                    }
                 } else {
                     this.connection.signal(updated.firstUser.candidate)
                 }
-
             }
-
             this.setState({ currentSession: updated })
         }
 
@@ -118,140 +112,24 @@ class Chat extends Component {
 
 
     logginHandler = () => {
-        // this should be update and dispatch with redux   
-        // User session and stream should be move to redux logic, i think so. 
-        //props.onLogin(userId, room);
-        this.setState({ isLogin: false })
-        const exist = this.state.rooms[this.state.room.trim()] || false;
-        console.log('exist', exist)
 
-        if (!exist) {
+        const exist = Object.keys(this.state.rooms).find(key => key.room == this.state.room)
+        console.log(exist)
 
-            this.connection = new SimplePeer({ initiator: true, trickle: false })
-            this.connection.on('signal', candidate => {
-
-                if (this.state.isConnected) {
-                    console.log('Signal cuando está connected')
-                    const newData = {
-                        ...this.state.currentSession,
-                        firstUser: { id: this.state.userId, candidate }
-                    }
-
-                    console.log('newData !exist', newData);
-                    this.setState({ currentSession: newData })
-
-
-                    fb.getDbInstance()
-                        .ref('rooms/' + newData.room)
-                        .update(newData)
-
-                } else {
-                    const newRoom = {
-                        room: this.state.room,
-                        firstUser: { id: this.state.userId, candidate },
-                        secondUser: { id: '', candidate: '' },
-                        isFull: false
-                    }
-
-                    fb.getDbInstance()
-                        .ref('rooms/' + this.state.room)
-                        .set(newRoom)
-
-                    this.setState({ currentSession: newRoom, initiator: true })
-                }
-
+        if (exist) {
+            console.log('cuando existe')
+            this.setState({
+                isLogin: false,
+                initiator: false,
+                currentSession: exist
             })
-
-            this.connection.on('connect', () => {
-                console.log('Is connected')
-                this.connection.send('hola2')
-                this.setState({ isConnected: true })
-            })
-
-            this.connection.on('data', data => {
-                const message = new TextDecoder("utf-8").decode(data)
-                console.log('data received: ', message)
-
-            })
-
-            this.connection.on('stream', stream => {
-
-                const remoteVideo = document.querySelector('#remote-video')
-                if ('srcObject' in remoteVideo) {
-                    remoteVideo.srcObject = stream
-                } else {
-                    remoteVideo.src = window.URL.createObjectURL(stream)
-                }
-
-            })
-
-
-
         } else {
-            // Updating an existing room 
-            const otherPeer = exist.firstUser.candidate
-            this.connection = new SimplePeer()
-            this.connection.signal(otherPeer)
-            this.connection.on('signal', candidate => {
-
-                if (this.state.isConnected) {
-
-                    const newData = {
-                        ...exist,
-                        secondUser: { id: this.state.userId, candidate }
-                    }
-
-                    this.setState({ currentSession: newData})
-
-                    fb.getDbInstance()
-                        .ref('rooms/' + newData.room)
-                        .update(newData)
-
-                } else {
-                    const updated = {
-                        ...exist,
-                        secondUser: { id: this.state.userId, candidate },
-                        isFull: true
-                    }
-
-                    fb.getDbInstance()
-                        .ref('rooms/' + exist.room)
-                        .update(updated)
-
-                    this.setState({ currentSession: updated, initiator: false })
-                }
-
-            })
-
-            this.connection.on('connect', () => {
-                console.log('Is connected')
-                this.connection.send('hola')
-                this.setState({ isConnected: true })
-            })
-
-            this.connection.on('data', data => {
-                const message = new TextDecoder("utf-8").decode(data)
-                console.log('data received: ', message.user)
-
-            })
-
-            this.connection.on('negotiation', data => {
-                console.log('algo pasa')
-            })
-
-            this.connection.on('stream', stream => {
-                console.log('recibiendo stream desde otro peer')
-                const remoteVideo = document.querySelector(classes.RemoteVideo)
-                if ('srcObject' in remoteVideo) {
-                    remoteVideo.srcObject = stream
-                } else {
-                    remoteVideo.src = window.URL.createObjectURL(stream)
-                }
-                remoteVideo.play()
-
+            console.log('cuando no existe')
+            this.setState({
+                isLogin: false,
+                initiator: true
             })
         }
-
 
     }
 
@@ -267,19 +145,55 @@ class Chat extends Component {
 
 
     handleLocalStream = (stream) => {
-        console.log('por aquí pasa', stream)
-        if (this.connection) {
-            console.log('entra', stream)
-            this.connection.addStream(stream)
+        console.log('entro')
+        if (!this.connection) {
+
+            this.connection = this.state.initiator
+                ? new SimplePeer({ initiator: true, stream: stream })
+                : new SimplePeer({ stream: stream })
+
+            this.connection.on('signal', candidate => {
+                if (!this.state.currentSession.room) {
+                    console.log('entro x1')
+                    const newRoom = {
+                        room: this.state.room,
+                        firstUser: { id: this.state.userId, candidate },
+                        secondUser: { id: '', candidate: '' },
+                        isFull: false
+                    }
+                    fb.getDbInstance()
+                        .ref('rooms/' + this.state.room)
+                        .set(newRoom)
+
+                } else {
+                    console.log('entro x2')
+                    const updated = {
+                        ...this.state.currentSession,
+                        secondUser: { id: this.state.userId, candidate },
+                        isFull: true
+                    }
+                    fb.getDbInstance()
+                        .ref('rooms/' + updated.room)
+                        .update(updated)
+
+                }
+            })
+
+            this.connection.on('connect', data => {
+                console.log('Conectadoooooo')
+                this.setState({ isConnected: true })
+            })
+
         } else {
-            console.log('no entra')
+
+
         }
     }
 
 
     render() {
 
-        const chatContainer = this.state.isLogin === false && this.state.isConnected ? (
+        const chatContainer = this.state.isLogin === false ? (
             <div className={classes.History}>
                 <video id="remote-video" className={classes.RemoteVideo} />
                 <div className={classes.LocalVideo}>

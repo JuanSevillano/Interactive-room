@@ -1,5 +1,4 @@
-'use strict';
-const { Board, Led, Leds } = require("johnny-five")
+const { Board, Led, Leds, LCD } = require("johnny-five")
 
 const devices = [];
 
@@ -11,10 +10,10 @@ class RoomController {
         this.board = new Board({ repl: false }); // Disabling RELP due to is not required so far
         this.led = ''
         this.led2 = ''
-        this.led = ''
 
         this.board.on("ready", () => {
 
+            // RBB LED 
             this.led = new Led.RGB({
                 pins: {
                     red: 6,
@@ -23,12 +22,18 @@ class RoomController {
                 }
             });
 
+            // Array of leds 
             this.leds = new Leds([9, 10, 11]);
-
+            // LCD 
+            this.lcd = new LCD({ controller: "PCF8574" });
+            this.lcd.print("hello")
+            
+            // Adding the current devices to an array in order to manage them 
             devices.push(this.led);
             devices.push(this.led2);
             devices.push(this.leds)
 
+            // Setting the controller-board ready 
             this.boardIsReady = true;
         });
     }
