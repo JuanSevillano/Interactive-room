@@ -1,6 +1,6 @@
 const path = require('path');
 const express = require('express');
-const RoomController = require('../controllers/room-controller');
+const RoomController = require('../controllers/room/room');
 const router = express.Router();
 // const { parse , stringify } = require('flatted/cjs'); // deleting this array logics, not useful anymore 
 

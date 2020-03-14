@@ -6,10 +6,11 @@ File to track the project's bugs, improvements and things TODO yet.
 
     Client:: 
         - ask devices to the server 
+        - change containers folder for views folder instead and adapt the whole architecture to it.
 
     Server::
 
-        - manejar el estado de johnny-five app con redux, es posible ? útil ? 
+        - manejar el estado de johnny-five app con redux, es posible ? es útil ? 
         - roomRouter.js - api needs to be handle way much better
         - devices management [ craete a hall for devices in the server, connect to a database ]
         - if the previous is done we can create a class where you can add any device w/out care type of it and active the handlers that should be implemented for this ] - [..think about johnny-five controllers in a general way that you can add any device]
@@ -33,7 +34,7 @@ File to track the project's bugs, improvements and things TODO yet.
 :::BUGS:::
 
     Server::
-        - null
+        - Servo-motor is not working propperly, it emmits a sound in the motor and only execute the first move. 
 
     Client:: 
         - null

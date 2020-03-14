@@ -8,7 +8,7 @@ function App(props) {
   return (
     <div className="App">
       <BrowserRouter>
-        <InteractiveRoom/>
+        <InteractiveRoom />
       </BrowserRouter>
     </div>
   );
