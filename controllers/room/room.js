@@ -2,12 +2,16 @@ const { Board, Led, Leds, LCD, Sensor, Servo, Animation } = require("johnny-five
 
 const devices = [];
 
+const WaterSensor = require('./waterSensor')
+const ThermoSensor = require('./thermoSensor')
+const Light = require('./light')
+
 class RoomController {
 
     constructor() {
         console.log('[ room-controller ] - Starting board');
         this.boardIsReady = false;
-        this.board = new Board({ repl: true }); // Disabling RELP due to is not required so far
+        this.board = new Board({ repl: false });
         this.led = ''
 
         this.boardInit();
@@ -28,10 +32,10 @@ class RoomController {
             // Array of leds 
             this.leds = new Leds([9, 10, 11]);
 
-            const waterSensor = new Sensor("A0");
-            waterSensor.on("change", value => {
-                 console.log("[ Room Controller, 28 ] - WaterSensor: ", value);
-            })
+            this.waterSensor = new WaterSensor('A0')
+            this.thermoSensor = new ThermoSensor ()
+            this.light = new Light(13);
+
 
             // Adding the current devices to an array in order to manage them 
             devices.push(this.led);
@@ -47,12 +51,14 @@ class RoomController {
      * why is implemented with this.led instead of looking for the reference */
     ledOn(ref) {
         this.led.on()
-        this.leds.on();
+        this.leds.on()
+        this.light.on()
     }
 
     ledOff(ref) {
         this.led.off()
-        this.leds.off();
+        this.leds.off()
+        this.light.off()
     }
 
     ledBlink(ref) {
